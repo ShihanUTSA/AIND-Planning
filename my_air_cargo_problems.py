@@ -217,32 +217,28 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        # Per https://discussions.udacity.com/t/understanding-ignore-precondition-heuristic/225906/2 :
-        # The Node object describes the current state. Since we're ignoring preconditions,
-        # we need to look at each goal condition in the goal state and count the number of
-        # individual actions that will make them happen. Of course, if a goal condition
-        # is already satisfied by the current state, then no additional action for this
-        # condition needs to be perfomed.
-
-        # see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+        # See Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2).
+        # We can get the current state  considering the node state and  intial state.
+        # Minimum number of unreached actions can be calculated comparing current state 
+        # and goal conditions.
         count = 0
         goals = set(self.goal)
         current_state = set(decode_state(node.state, self.state_map).pos)
         count = len(goals - current_state)
         return count
-        return count
+        
 
 
 def air_cargo_p1() -> AirCargoProblem:
     cargos = ['C1', 'C2']
     planes = ['P1', 'P2']
     airports = ['JFK', 'SFO']
+    
     pos = [expr('At(C1, SFO)'),
            expr('At(C2, JFK)'),
            expr('At(P1, SFO)'),
-           expr('At(P2, JFK)'),
-           ]
+           expr('At(P2, JFK)')]
+    
     neg = [expr('At(C2, SFO)'),
            expr('In(C2, P1)'),
            expr('In(C2, P2)'),
@@ -250,12 +246,11 @@ def air_cargo_p1() -> AirCargoProblem:
            expr('In(C1, P1)'),
            expr('In(C1, P2)'),
            expr('At(P1, JFK)'),
-           expr('At(P2, SFO)'),
-           ]
+           expr('At(P2, SFO)')]
+    
     init = FluentState(pos, neg)
-    goal = [expr('At(C1, JFK)'),
-            expr('At(C2, SFO)'),
-            ]
+    goal = [expr('At(C1, JFK)'),expr('At(C2, SFO)')]
+    
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
 
@@ -267,19 +262,21 @@ def air_cargo_p2() -> AirCargoProblem:
         ∧ Cargo(C1) ∧ Cargo(C2) ∧ Cargo(C3)
         ∧ Plane(P1) ∧ Plane(P2) ∧ Plane(P3)
         ∧ Airport(JFK) ∧ Airport(SFO) ∧ Airport(ATL))
+    
     Goal(At(C1, JFK) ∧ At(C2, SFO) ∧ At(C3, SFO))
     '''
     cargos = ['C1', 'C2', 'C3']
     planes = ['P1', 'P2', 'P3']
     airports = ['ATL', 'JFK', 'SFO']
+    
     # List where the cargo and planes are
     pos = [expr('At(C1, SFO)'),
            expr('At(C2, JFK)'),
            expr('At(C3, ATL)'),
            expr('At(P1, SFO)'),
            expr('At(P2, JFK)'),
-           expr('At(P3, ATL)'),
-           ]
+           expr('At(P3, ATL)')]
+    
     # List where the cargo and planes aren't
     # Indicate that the cargo hasn't been loaded in any of the planes yet
     neg = [expr('At(C1, ATL)'),
@@ -305,11 +302,10 @@ def air_cargo_p2() -> AirCargoProblem:
            expr('In(C3, P3)'),
            ]
     init = FluentState(pos, neg)
-    # List goals: C1 -> JFK and C2,C3 -> SFO
-    goal = [expr('At(C1, JFK)'),
-            expr('At(C2, SFO)'),
-            expr('At(C3, SFO)'),
-            ]
+    
+    # Goals to achieve: C1 -> JFK and C2,C3 -> SFO
+    goal = [expr('At(C1, JFK)'),expr('At(C2, SFO)'),expr('At(C3, SFO)')]
+    
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
 
@@ -325,16 +321,17 @@ def air_cargo_p3() -> AirCargoProblem:
     cargos = ['C1', 'C2', 'C3', 'C4']
     planes = ['P1', 'P2']
     airports = ['ATL', 'JFK', 'ORD', 'SFO']
-    # List where the cargo and planes are
+    
+    # Positive states (List where the cargo and planes are at)
     pos = [expr('At(C1, SFO)'),
            expr('At(C2, JFK)'),
            expr('At(C3, ATL)'),
            expr('At(C4, ORD)'),
            expr('At(P1, SFO)'),
-           expr('At(P2, JFK)'),
-           ]
-    # List where the cargo and planes aren't
-    # Indicate that the cargo hasn't been loaded in any of the planes yet
+           expr('At(P2, JFK)')]
+    
+    # Negative states (List where the cargo and planes aren't at).
+    # Still caro is not loaded.
     neg = [expr('At(C1, ATL)'),
            expr('At(C1, JFK)'),
            expr('At(C1, ORD)'),
@@ -360,13 +357,12 @@ def air_cargo_p3() -> AirCargoProblem:
            expr('In(C3, P1)'),
            expr('In(C3, P2)'),
            expr('In(C4, P1)'),
-           expr('In(C4, P2)'),
-           ]
+           expr('In(C4, P2)')]
+    
     init = FluentState(pos, neg)
-    # List goals: C1,C3 -> JFK and C2,C4 -> SFO
-    goal = [expr('At(C1, JFK)'),
-            expr('At(C2, SFO)'),
-            expr('At(C3, JFK)'),
-            expr('At(C4, SFO)'),
-            ]
+    
+    # Goals to achieve: C1 -> JFK and C2,C3 -> SFO
+    goal = [expr('At(C1, JFK)'),expr('At(C2, SFO)'),
+            expr('At(C3, JFK)'),expr('At(C4, SFO)')]
+    
     return AirCargoProblem(cargos, planes, airports, init, goal)
