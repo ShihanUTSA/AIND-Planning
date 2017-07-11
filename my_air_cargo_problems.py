@@ -56,6 +56,7 @@ class AirCargoProblem(Problem):
 
         def load_actions():
             """Create all concrete Load actions and return a list
+            
             :return: list of Action objects
             """
             loads = []
@@ -75,6 +76,7 @@ class AirCargoProblem(Problem):
 
         def unload_actions():
             """Create all concrete Unload actions and return a list
+            
             :return: list of Action objects
             """
             unloads = []
@@ -125,26 +127,24 @@ class AirCargoProblem(Problem):
             e.g. 'FTTTFF'
         :return: list of Action objects
         """
-        # TODO implement
+        
         possible_actions = []
-        
-        # Get a handle to our knowledge base of logical expressions (propositional logic)
-        kb = PropKB()
-
+        # Create an object(KB) for knowledge base for propositional logic
+        KB = PropKB()
         # Add the current state's positive sentence's clauses to the propositional logic KB
-        kb.tell(decode_state(state, self.state_map).pos_sentence())
+        KB.tell(decode_state(state, self.state_map).pos_sentence())
         
-        # From all the concrete actions we can perform, select the ones that can be executed
-        # from the current state. An action is executable if it satisfies a problem's preconditions.
+        # Select all the executable actions from the concrete actions we can perform.
+        # Executable actions must satisfy problem's preconditions.
         # That is, it must appear in a problem's positive preconditions and not be in a problem's negative ones.
         for action in self.actions_list:
             is_possible = True
             for clause in action.precond_pos:
-                if clause not in kb.clauses:
+                if clause not in KB.clauses:
                     is_possible = False
                     break
             for clause in action.precond_neg:
-                if clause in kb.clauses:
+                if clause in KB.clauses:
                     is_possible = False
                     break
             if is_possible:
@@ -160,27 +160,17 @@ class AirCargoProblem(Problem):
         :param action: Action applied
         :return: resulting state after action
         """
-        # TODO implement
+        # From example_have_cake.py
         new_state = FluentState([], [])
-        
         # Get the current state
         old_state = decode_state(state, self.state_map)
 
-        # Per the teaching materials, the precondition and effect of an action are each conjunctions of literals
-        # (positive or negated atomic sentences). The precondition defines the states in which the action can be
-        # executed, and the effect defines the result of executing the action. So, for each fluent (positive or
-        # negative) in the old state, we need to look in the action's effects (both the add and remove effects) to
-        # determine how the fluent will be carried over to the new state, as a positive or a negative fluent.
         for fluent in old_state.pos:
             if fluent not in action.effect_rem:
                 new_state.pos.append(fluent)
         for fluent in old_state.neg:
             if fluent not in action.effect_add:
                 new_state.neg.append(fluent)
-                
-        # The action may have positive and negative effects INDEPENDENTLY of the old state. If they're add effects,
-        # we need to make sure these fluents are added to the new state's positive sentences. Similarly, if they're
-        # remove effects, these fluents need to be added to the new state's negative sentences.
         for fluent in action.effect_add:
             if fluent not in new_state.pos:
                 new_state.pos.append(fluent)
@@ -196,10 +186,10 @@ class AirCargoProblem(Problem):
         :param state: str representing state
         :return: bool
         """
-        kb = PropKB()
-        kb.tell(decode_state(state, self.state_map).pos_sentence())
+        KB = PropKB()
+        KB.tell(decode_state(state, self.state_map).pos_sentence())
         for clause in self.goal:
-            if clause not in kb.clauses:
+            if clause not in KB.clauses:
                 return False
         return True
 
