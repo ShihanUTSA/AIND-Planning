@@ -269,7 +269,7 @@ def air_cargo_p2() -> AirCargoProblem:
     planes = ['P1', 'P2', 'P3']
     airports = ['ATL', 'JFK', 'SFO']
     
-    # List where the cargo and planes are
+    # Positive states (List where the cargo and planes are at).
     pos = [expr('At(C1, SFO)'),
            expr('At(C2, JFK)'),
            expr('At(C3, ATL)'),
@@ -277,8 +277,8 @@ def air_cargo_p2() -> AirCargoProblem:
            expr('At(P2, JFK)'),
            expr('At(P3, ATL)')]
     
-    # List where the cargo and planes aren't
-    # Indicate that the cargo hasn't been loaded in any of the planes yet
+    # Negative states (List where the cargo and planes aren't at).
+    # Still caro is not loaded.
     neg = [expr('At(C1, ATL)'),
            expr('At(C1, JFK)'),
            expr('At(C2, ATL)'),
